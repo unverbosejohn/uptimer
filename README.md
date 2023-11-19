@@ -1,6 +1,6 @@
 # Service Status Dashboard
 
-<img src="https://github.com/unverbosejohn/uptimer/blob/main/static/images/dashboard.jpg?raw=true" width="500" alt="Uptimer dashboard">
+<img src="https://github.com/unverbosejohn/uptimer/blob/main/static/images/dashboard.jpg?raw=true" width="800" alt="Uptimer dashboard">
 
 ## Overview
 This Service Status Dashboard is a web application designed to display the status of various services in real-time. It provides an easy-to-understand visual representation of the operational status of each service.
