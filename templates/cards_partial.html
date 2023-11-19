@@ -1,0 +1,23 @@
+{% for service in service_summaries %}
+    <div class="col-md-6 service-card">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ service.name }}</h5>
+                <p class="card-text">
+                    Status:{% if service.status == 'Online' %}
+                        <span class="text-success">&#10003; Online</span>
+                    {% else %}
+                        <span class="text-danger">&#10005; Offline</span>
+                    {% endif %}<br />
+                    Host: {{ service.host }}<br />
+                    Uptime: {{ service.uptime }}%<br />
+                    Response Time (last): {{ hr_time(service.response_times[-1] / 1000) if service.response_times else 'N/A' }}<br>
+                    Response Time (avg): {{ hr_time(service.avg_response_time / 1000) if service.avg_response_time else 'N/A' }}<br />
+                </p>
+                <div class="card-chart">
+                    <canvas id="response-time-chart-{{ service.name }}" class="response-time-chart" data-response-times="{{ service.response_times | tojson }}" data-service-name="{{ service.name }}"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}

@@ -1,0 +1,13 @@
+
+# Python
+*.pyc
+__pycache__/
+venv/
+env/
+*.env
+config.py
+
+# Flask
+instance/
+.webassets-cache
+

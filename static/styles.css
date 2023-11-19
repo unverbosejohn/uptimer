@@ -1,0 +1,159 @@
+body {
+    background-color: #f4f4f4;
+    background-image: url('images/sample_background.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    font-family: 'Roboto', Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    border-radius: 10px;
+    padding: 30px;
+    background: #f2f2f2;
+    box-shadow: 0px 10px 25px 0px rgba(0, 0, 0, 0.1);
+}
+.container-clean-centered {
+    /* border-radius: 10px; */
+    /* padding: 30px; */
+    background: #f2f2f2;
+    margin-left: auto;
+    margin-right: auto;
+
+    /* box-shadow: 0px 10px 25px 0px rgba(0, 0, 0, 0.1); */
+}
+
+#cards-container .service-card {
+    margin-bottom: 30px;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-body {
+    border: none;
+    padding: 20px;
+}
+
+.card-title {
+    color: #000;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.service-card-row {
+    margin-bottom: 10px;
+}
+
+.text-success {
+    color: #38c172;
+}
+
+.text-danger {
+    color: #e3342f;
+}
+
+.align-items-start {
+    align-items: flex-start;
+}
+
+.logo {
+    max-width: 100%;
+    height: auto;
+}
+
+h1, h5 {
+    font-family: 'Roboto', sans-serif;
+    margin-bottom: 15px;
+}
+
+.col-md-2 {
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 24px;
+    }
+
+    h5 {
+        font-size: 18px;
+    }
+}
+
+
+a:hover, button:hover {
+    text-decoration: none;
+    opacity: 0.8;
+}
+
+
+.row {
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.col-md-6 {
+    padding-right: 15px;
+    padding-left: 15px;
+    /* margin-bottom: 10; */
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+.card-text {
+    font-size: 16px;
+    color: #666;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 20px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .container {
+        padding: 15px;
+    }
+    
+    .col-md-10, .col-md-2 {
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+}
+
+.runtime-container {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    /* font-size: 0.75rem; */
+    color: #999;
+    opacity: 0.7;
+    /* text-shadow: 0px 2px 3px rgba(255, 255, 255, 0.5),
+                0px -1px 1px rgba(0, 0, 0, 0.8); */
+
+}

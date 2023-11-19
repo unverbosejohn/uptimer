@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Service Status Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-2 align-items-start">
+            <img src="{{ url_for('static', filename='images/sample_logo.png') }}" alt="Logo" class="logo">
+        </div>
+        <div id="service-start-time" style="display: none;">{{ service_start_time }}</div>
+        <div class="col-md-12">
+            <div class="runtime-container">
+                <p><span id="runtime-value"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-clean-centered">
+        <div class="d-flex justify-content-center">
+            <div class="col-md-10">
+                <h2 class="text-center mt-4 mb-4">Status Dashboard</h2>
+                <!-- AJAX Container -->
+                <div id="cards-container" class="row"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    var charts = {}; // Object to hold chart instances
+
+    /**
+     * Initializes or updates the charts.
+     * Each chart is identified by the service name, and destroyed and re-created if it already exists.
+     * TODO: This is not the most efficient way to do this, but it works for now.
+     */
+    function initializeOrUpdateCharts() {
+        document.querySelectorAll('.response-time-chart').forEach(function (canvas) {
+            const responseTimes = JSON.parse(canvas.getAttribute('data-response-times'));
+            const serviceName = canvas.getAttribute('data-service-name');
+
+            if (charts[serviceName]) {
+                charts[serviceName].destroy();
+                var chartInstance = new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels: responseTimes.map((_, i) => i + 1),
+                        datasets: [{
+                            label: 'Response time (ms)',
+                            data: responseTimes,
+                            fill: false,
+                            borderColor: 'rgb(75, 192, 192)',
+                            tension: 0.1,
+                        }]
+                    },
+                    options: {
+                        animation: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            },
+                            x: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+
+                charts[serviceName] = chartInstance;
+            } else {
+
+                var chartInstance = new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels: responseTimes.map((_, i) => i + 1),
+                        datasets: [{
+                            label: 'Response time (ms)',
+                            data: responseTimes,
+                            fill: false,
+                            // borderColor: 'rgb(75, 192, 192)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            },
+                            x: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+            charts[serviceName] = chartInstance;
+        });
+    }
+
+    function updateCards() {
+        fetch('/update-cards')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('cards-container').innerHTML = html;
+                initializeOrUpdateCharts();
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    updateCards();
+    setInterval(updateCards, 5000);
+</script>
+
+<script>
+    function getServiceStartTime() {
+        const startTimeElement = document.getElementById('service-start-time');
+        const utcTimestamp = startTimeElement.textContent.replace(' ', 'T') + 'Z';
+        return new Date(utcTimestamp);
+    }
+
+    function formatDuration(durationInSeconds) {
+        const secondsInMinute = 60;
+        const secondsInHour = 3600;
+        const secondsInDay = 86400;
+
+        const days = Math.floor(durationInSeconds / secondsInDay);
+        const hours = Math.floor((durationInSeconds % secondsInDay) / secondsInHour);
+        const minutes = Math.floor((durationInSeconds % secondsInHour) / secondsInMinute);
+        const seconds = durationInSeconds % secondsInMinute;
+
+        let formattedDuration = `${days}d, ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
+        return formattedDuration;
+    }
+
+    const serviceStartTime = getServiceStartTime();
+
+    function updateServiceRuntime() {
+        const now = new Date();
+        const nowUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
+
+        const runtimeInSeconds = Math.floor((nowUtc - serviceStartTime.getTime()) / 1000);
+        const formattedRuntime = formatDuration(runtimeInSeconds);
+
+        document.getElementById('runtime-value').textContent = formattedRuntime;
+    }
+
+
+    setInterval(updateServiceRuntime, 1000);
+</script>
+
+</body>
+</html>
