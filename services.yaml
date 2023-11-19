@@ -1,0 +1,19 @@
+services:
+  - name: Example Service 1
+    host: 127.0.0.1
+    port: 5000
+    expected_response: 200
+    check_interval: 5
+    alert_period: 3600
+  - name: Example Service 2
+    host: api.example.com
+    port: 443
+    expected_response: 200
+    check_interval: 600
+    alert_period: 7200
+  - name: Example Service 3
+    host: api.example.com
+    port: 443
+    expected_response: 200
+    check_interval: 600
+    alert_period: 7200
