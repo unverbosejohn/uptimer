@@ -37,7 +37,7 @@ offline after a set period.
 - Contributions to the dashboard are welcome. Please refer to the contribution guidelines for more information.
 
 ## License
-
+- Standard MIT license
 
 ## Author
 John Geroitos
