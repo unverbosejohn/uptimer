@@ -22,12 +22,34 @@ offline after a set period.
    - Edit `config.py` to suit your environment and preferences, such as default values, smpt server details, Slack/Teams tokens, etc.
 
 ### Running the Dashboard
-- After configuring the services and settings, run your server script to start the dashboard.
+- After configuring the services and settings, run main.py script to start the dashboard.
 - Access the dashboard through your preferred web browser to view the status of the services.
 
 ## Usage
 - The dashboard is intended for system administrators or users who need to monitor the status of various services.
 - Each card on the dashboard represents a service, showing its current status, uptime, response time, and other relevant details.
+
+**Production ready**:
+   - Create a vitrtual environment from the project's root directory:
+   ```
+   mkdir venv
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+   - Install requirements
+   ```
+   pip install -r requirements.txt
+   ```
+   - Install gunicorn
+   ```
+   sudo apt install gunicorn
+   pip install gunicorn
+   ```
+   - Run the service
+   ```
+   gunicorn -w 4 -b 0.0.0.0:5000 main:app
+   ```
+   - Access your dashboard at http://127.0.0.1:5000
 
 ## Technical Details
 - The dashboard frontend is built using HTML, CSS, and JavaScript.
