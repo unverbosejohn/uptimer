@@ -18,10 +18,16 @@ class YamlReader:
                     host = service_data['host']
                     port = service_data['port']
                     expected_response = service_data['expected_response']
+                    expected_json_response = service_data.get('expected_json_response', None)
                     check_interval = service_data.get('check_interval', 300) 
                     alert_period = service_data.get('alert_period', 3600)
+                    
 
-                    service = Service(name=name, host=host, port=port, expected_response=expected_response)
+                    service = Service(name=name, 
+                                      host=host, 
+                                      port=port, 
+                                      expected_response=expected_response,
+                                      expected_json_response=expected_json_response)
                     service.check_interval = check_interval
                     service.alert_period = alert_period
 

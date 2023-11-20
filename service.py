@@ -1,16 +1,23 @@
 import requests
 import time
+import json
 
 import config
 
 
 class Service:
     def __init__(self, name: str, host: str, port: int, 
-                 expected_response=200, check_interval=300, uptime_threshold=99.9, max_response_times=100):
+                 expected_response: int = 200, 
+                 expected_json_response: dict | None = None, 
+                 check_interval: int = 300, 
+                 uptime_threshold: float | int = 99.9, 
+                 max_response_times: int = 100):
+        
         self.name = name
         self.host = host
         self.port = port
         self.expected_response = expected_response
+        self.expected_json_response = expected_json_response
         self.check_interval = check_interval
         self.uptime_threshold = uptime_threshold
         self.last_checked = 0
@@ -29,7 +36,7 @@ class Service:
         _summary_: Checks the status of the service, sets instance attributes
         """
         if self.protocol is None:
-            self.protocol = self.check_protocol(host=self.host, port=self.port)
+            self.protocol = self.check_protocol()
         
         if self.protocol:
             self.check_service()
@@ -41,9 +48,12 @@ class Service:
         self.total_checks += 1
 
         try:
-            url = f"{self.protocol}://{self.host}:{self.port}"
             start_time = time.time()
-            response = requests.get(url, timeout=config.default_timeout)
+            
+            # TODO: Building the URL each time is not efficient. Fix this.
+            url = self.protocol + '://' + self.get_url()
+            
+            response = requests.get(url, timeout=config.default_timeout, allow_redirects=True)
             end_time = time.time()
 
             response_time_ms = (end_time - start_time) * 1000
@@ -54,10 +64,22 @@ class Service:
 
             if response.status_code != self.expected_response:
                 self.log_failed_check()
-            
-            else:
-                self.log_success_check()
-                              
+                return
+
+            if self.expected_json_response:
+                try:
+                    actual_json_response = response.json()
+                    
+                    if not self.is_json_response_matching(actual_json_response, self.expected_json_response):
+                        self.log_failed_check()
+                        return
+                
+                except json.JSONDecodeError:
+                    self.log_failed_check()
+                    return
+
+            self.log_success_check()
+
         except Exception as e:
             self.log_failed_check()
             
@@ -113,8 +135,7 @@ class Service:
             
         return self.as_dict()
     
-    @staticmethod
-    def check_protocol(host: str, port: int) -> str | None:
+    def check_protocol(self) -> str | None:
         """
         Attempts to determine the protocol (HTTP or HTTPS) of a service
 
@@ -122,23 +143,23 @@ class Service:
         :param _type_ port: Port number of the service
         :return _type_: String containing the protocol (http or https)
         """
-        if port == 443:
+        if self.port == 443:
             return 'https'
-        elif port == 80:
+        elif self.port == 80:
             return 'http'
         
-        https_url = f"https://{host}:{port}"
+        https_url = f"https://{self.get_url()}"
         try:
-            response = requests.get(https_url, timeout=5)
+            response = requests.get(https_url, timeout=5, allow_redirects=True)
             if response.status_code == 200:
                 return 'https'
         
         except requests.exceptions.RequestException as e:
             pass
 
-        http_url = f"http://{host}:{port}"
+        http_url = f"http://{self.get_url()}"
         try:
-            response = requests.get(http_url, timeout=5)
+            response = requests.get(http_url, timeout=5, allow_redirects=True)
             if response.status_code == 200:
                 return 'http'
             
@@ -147,9 +168,46 @@ class Service:
 
 
         return None
+    
+    @staticmethod
+    def is_json_response_matching(actual: dict, expected: dict) -> bool:
+        """
+        Compares the actual JSON response with the expected JSON structure.
+
+        :param actual: The actual JSON response from the service.
+        :param expected: The expected JSON structure.
+        :return: True if the actual JSON matches the expected structure, False otherwise.
+        """
+
+        for key, value in expected.items():
+            if key not in actual or actual[key] != value:
+                return False
+        return True
+    
+    def get_url(self) -> str:
+        """
+        Returns the base URL of the service
+
+        :return _type_: String containing the base URL of the service
+        """
+        
+        if '/' in self.host:
+            host_parts = self.host.split('/')
+            base_host = host_parts[0]
+            path = '/'.join(host_parts[1:])
+        
+        else:
+            base_host = self.host
+            path = ''
+            
+        result = f"{base_host}:{self.port}{'/' + path if path else path}"
+
+        return result
 
 if __name__ == '__main__':
-    service = Service(name='Test Service', host='127.0.0.1', port=5000, expected_response=200)
-    print(service.check_protocol(host='127.0.0.1', port=5000))
+    service = Service(name='Test Service', host='api.vimodji.com/v1/system/base', port=443, expected_response=200)
+    
+    print(service.get_url())
+    print(service.check_protocol())
     service.check_status()
     print(service.status_summary())
