@@ -11,12 +11,17 @@
                     {% endif %}<br />
                     Host: {{ service.host }}<br />
                     Uptime: {{ service.uptime }}%<br />
-                    Response Time (last): {{ hr_time(service.response_times[-1] / 1000) if service.response_times else 'N/A' }}<br>
-                    Response Time (avg): {{ hr_time(service.avg_response_time / 1000) if service.avg_response_time else 'N/A' }}<br />
+                    RT (last): {{ hr_time(service.response_times[-1] / 1000) if service.response_times else 'N/A' }}<br>
+                    RT (avg): {{ hr_time(service.avg_response_time / 1000) if service.avg_response_time else 'N/A' }}<br />
                 </p>
                 <div class="card-chart">
                     <canvas id="response-time-chart-{{ service.name }}" class="response-time-chart" data-response-times="{{ service.response_times | tojson }}" data-service-name="{{ service.name }}"></canvas>
                 </div>
+                <p class="card-chart-sub">
+                    <br />
+                    Last incident: {{ service.failed_timestamps[-1] if service.failed_timestamps }}<br />
+                    <!-- <small class="text-muted">Last updated {{ service.last_updated }}</small> -->
+
             </div>
         </div>
     </div>

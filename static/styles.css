@@ -123,6 +123,11 @@ a:hover, button:hover {
     color: #666;
 }
 
+.card-chart-sub {
+    font-size: 12px;
+    color: #666;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .card {
