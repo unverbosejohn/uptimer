@@ -18,3 +18,6 @@ smtp_port = 587
 smtp_username = 'your_username'
 smtp_password = 'your_password'
 sender_email = ''
+
+# API port
+port = 5000

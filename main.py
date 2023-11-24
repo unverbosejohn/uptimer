@@ -46,4 +46,4 @@ def update_cards():
 if __name__ == '__main__':
     checker_thread = threading.Thread(target=checker.check_services)
     checker_thread.start()
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=config.port, debug=False)
