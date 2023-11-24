@@ -27,7 +27,16 @@ body {
 }
 
 #cards-container .service-card {
-    margin-bottom: 30px;
+    /* margin-bottom: 30px; */
+    /* border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1); */
+    margin-bottom: 20px;
+}
+
+.service-card p {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #333; /* Darker font color for readability */
 }
 
 .card {
@@ -126,7 +135,14 @@ a:hover, button:hover {
 .card-chart-sub {
     font-size: 12px;
     color: #666;
+    text-align: right;
 }
+
+.status-indicator {
+    font-weight: bold;
+    color: green; /* or red, depending on the status */
+}
+
 
 /* Responsive adjustments */
 @media (max-width: 768px) {

@@ -18,10 +18,10 @@
                     <canvas id="response-time-chart-{{ service.name }}" class="response-time-chart" data-response-times="{{ service.response_times | tojson }}" data-service-name="{{ service.name }}"></canvas>
                 </div>
                 <p class="card-chart-sub">
-                    <br />
-                    Last incident: {{ service.failed_timestamps[-1] if service.failed_timestamps }}<br />
+                    Incidents<br />
+                    {{ len(service.failed_timestamps) if service.failed_timestamps else '0' }} total | last: {{ service.failed_timestamps[-1] if service.failed_timestamps else '-' }}
                     <!-- <small class="text-muted">Last updated {{ service.last_updated }}</small> -->
-
+                </p>
             </div>
         </div>
     </div>

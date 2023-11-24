@@ -39,7 +39,8 @@ def update_cards():
     service_summaries = get_service_summaries()
     return render_template('cards_partial.html', 
                            service_summaries=service_summaries, 
-                           hr_time=hr_time)
+                           hr_time=hr_time,
+                           len=len)
 
 
 
