@@ -6,11 +6,14 @@ from email.mime.multipart import MIMEMultipart
 import config
 from service import Service
 from notifier import notifier
+from database import Database
+
 
 class Checker:
     def __init__(self, services: list[Service]):
         self.services = services
-
+        self.db = Database(config.db_file, config.schema_file)
+        
     def check_services(self):
         while True:
             current_time = time.time()
@@ -19,12 +22,15 @@ class Checker:
                     service.check_status()
                     service.last_checked = current_time
                     service.status_summary()
-                    self.alert_if_needed(service)
+                    self.alert_and_log(service)
                     
             time.sleep(1)
 
-    def alert_if_needed(self, service: Service):
+    def alert_and_log(self, service: Service):
         if service.failed_checks > 0 and (service.total_checks % service.alert_period == 0):
+            
+            service.log_failed_check()
+            
             if not notifier:
                 return
             
@@ -35,8 +41,15 @@ class Checker:
                       f"Failed Checks: {service.failed_checks}\n"\
                       f"Failed Timestamps: {', '.join(service.failed_timestamps)}"
             
-            notifier.send_email(config.recipient_email, subject, message)
+            for recipient in config.recipients_list:
+                notifier.send_email(recipient, subject, message)
+                time.sleep(1)
             
+        else:
+            service.log_success_check()
+        
+    def close(self):
+        self.db.close()
             
 if __name__ == "__main__":
     from yaml_reader import YamlReader

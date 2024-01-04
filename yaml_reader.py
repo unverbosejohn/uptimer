@@ -1,6 +1,8 @@
 import yaml
 
+import config
 from service import Service
+from database import Database
 
 class YamlReader:
     def __init__(self, file_path):
@@ -27,7 +29,9 @@ class YamlReader:
                                       host=host, 
                                       port=port, 
                                       expected_response=expected_response,
-                                      expected_json_response=expected_json_response)
+                                      expected_json_response=expected_json_response,
+                                      db=Database(config.db_file, config.schema_file))
+                    
                     service.check_interval = check_interval
                     service.alert_period = alert_period
 

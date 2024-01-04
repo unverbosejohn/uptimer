@@ -2,6 +2,9 @@
 
 services_yaml = 'services.yaml'
 
+db_file = 'services.db'
+
+
 # Default interval --Will be used if no other interval is specified in the YAML file
 default_interval = 120  # 2 minutes
 

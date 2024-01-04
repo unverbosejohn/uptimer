@@ -3,6 +3,7 @@ import time
 import json
 
 import config
+from database import Database
 
 
 class Service:
@@ -11,7 +12,8 @@ class Service:
                  expected_json_response: dict | None = None, 
                  check_interval: int = 300, 
                  uptime_threshold: float | int = 99.9, 
-                 max_response_times: int = 100):
+                 max_response_times: int = 100,
+                 db: Database = None):
         
         self.name = name
         self.host = host
@@ -30,6 +32,7 @@ class Service:
         self.response_times = []
         self.protocol = None
         self.status = "Online"
+        self.db = db if db else Database(config.db_file, config.schema_file)
 
     def check_status(self):
         """
@@ -88,9 +91,27 @@ class Service:
         self.failed_timestamps.append(time.strftime("%Y-%m-%d %H:%M:%S"))
         self.protocol = None
         self.status = "Offline"
+
+        db = Database(config.db_file, config.schema_file)
+        
+        cursor = db.conn.cursor()
+        cursor.execute('''INSERT INTO service_logs (service_name, status, timestamp)
+                            VALUES (?, ?, ?)''', 
+                        (self.name, 'Failed', time.strftime("%Y-%m-%d %H:%M:%S")))
+        db.conn.commit()
+        
+        db.close()
         
     def log_success_check(self):
         self.status = "Online"
+        
+        db = Database(config.db_file, config.schema_file)
+        cursor = db.conn.cursor()
+        cursor.execute('''INSERT INTO service_logs (service_name, status, timestamp)
+                            VALUES (?, ?, ?)''', 
+                        (self.name, 'Success', time.strftime("%Y-%m-%d %H:%M:%S")))
+        db.conn.commit()
+        db.close()
 
     def calculate_uptime(self) -> float:
         """
@@ -203,6 +224,7 @@ class Service:
         result = f"{base_host}:{self.port}{'/' + path if path else path}"
 
         return result
+
 
 if __name__ == '__main__':
     service = Service(name='Test Service', host='api.vimodji.com/v1/system/base', port=443, expected_response=200)

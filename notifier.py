@@ -39,3 +39,8 @@ if config.email_enabled:
     notifier = Notifier(config.smtp_server, config.smtp_port, config.smtp_username, config.smtp_password, config.sender_email)
 else:
     notifier = None
+    
+    
+if __name__ == '__main__':
+    notifier = Notifier(config.smtp_server, config.smtp_port, config.smtp_username, config.smtp_password, config.sender_email)
+    notifier.send_email('dev@email.com', 'Test', 'Test message')
