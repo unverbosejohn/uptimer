@@ -1,0 +1,24 @@
+services:
+  - name: Website
+    host: www.website.com
+    port: 80
+    expected_response: 200
+    expected_json_response:
+    check_interval: 5
+    alert_period: 3600
+  - name: API
+    host: api.website.com/v1/system/base
+    port: 443
+    expected_response: 200
+    expected_json_response:
+      error: false
+      http_response: 200
+    check_interval: 5
+    alert_period: 7200
+  - name: Admin
+    host: admin.website.com
+    port: 443
+    expected_response: 200
+    expected_json_response:
+    check_interval: 5
+    alert_period: 7200

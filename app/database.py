@@ -1,6 +1,6 @@
 import sqlite3
 
-import config
+import app.config as config
 
 class Database:
     def __init__(self, db_file, schema_file):

@@ -2,8 +2,8 @@ import requests
 import time
 import json
 
-import config
-from database import Database
+import app.config as config
+from app.database import Database
 
 
 class Service:
@@ -25,6 +25,7 @@ class Service:
         self.last_checked = 0
         self.total_checks = 0
         self.failed_checks = 0
+        self.consecutive_failed_checks = 0
         self.avg_response_time = 0.0
         self.uptime = 0.0
         self.failed_timestamps = []
@@ -42,9 +43,10 @@ class Service:
             self.protocol = self.check_protocol()
         
         if self.protocol:
-            self.check_service()
+            result = self.check_service()
+            
         
-    def check_service(self):
+    def check_service(self) -> bool:
         """
         _summary_: Checks the status of the service, sets instance attributes
         """
@@ -82,12 +84,17 @@ class Service:
                     return
 
             self.log_success_check()
+            
+            return True
 
         except Exception as e:
             self.log_failed_check()
             
+            return False
+            
     def log_failed_check(self):
         self.failed_checks += 1
+        self.consecutive_failed_checks += 1
         self.failed_timestamps.append(time.strftime("%Y-%m-%d %H:%M:%S"))
         self.protocol = None
         self.status = "Offline"
@@ -104,7 +111,8 @@ class Service:
         
     def log_success_check(self):
         self.status = "Online"
-        
+        self.consecutive_failed_checks = 0
+
         db = Database(config.db_file, config.schema_file)
         cursor = db.conn.cursor()
         cursor.execute('''INSERT INTO service_logs (service_name, status, timestamp)
@@ -112,6 +120,42 @@ class Service:
                         (self.name, 'Success', time.strftime("%Y-%m-%d %H:%M:%S")))
         db.conn.commit()
         db.close()
+        
+    def read_history(self):
+        """
+        _summary_: Reads the history of the service from the database
+        """
+        db = Database(config.db_file, config.schema_file)
+        cursor = db.conn.cursor()
+        cursor.execute('''SELECT * FROM service_logs WHERE service_name = ?''', (self.name,))
+        rows = cursor.fetchall()
+        db.close()
+        
+        return rows
+    
+    def parse_history(self, rows: list[tuple]) -> dict:
+        """
+        _summary_: Parses the history of the service from the database
+
+        :param _type_ rows: List of tuples containing the history of the service
+        :return _type_: Dictionary containing the history of the service
+        """
+        self.total_checks = len(rows)
+        
+        if len(rows) > 0:
+            self.last_checked = rows[-1]
+        
+        history = {}
+        for row in rows:
+            if duration := row[4]:
+                self.response_times.append(duration)
+                
+            if rows[2] == 'Failed':
+                self.failed_checks += 1
+                self.failed_timestamps.append(row[3])
+                
+        self.average_response_time = self.average_response_time()
+        return history
 
     def calculate_uptime(self) -> float:
         """
@@ -227,9 +271,10 @@ class Service:
 
 
 if __name__ == '__main__':
-    service = Service(name='Test Service', host='api.vimodji.com/v1/system/base', port=443, expected_response=200)
+    service = Service(name='API', host='api.vimodji.com/v1/system/base', port=443, expected_response=200)
     
-    print(service.get_url())
-    print(service.check_protocol())
-    service.check_status()
-    print(service.status_summary())
+    # print(service.get_url())
+    # print(service.check_protocol())
+    # service.check_status()
+    # print(service.status_summary())
+    # print(service.read_history())

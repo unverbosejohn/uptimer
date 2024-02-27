@@ -31,4 +31,5 @@ ENV/
 .DS_Store
 
 # Project specific
-config.py
+config.yaml
+services.yaml

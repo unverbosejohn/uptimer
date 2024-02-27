@@ -2,7 +2,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-import config
+import app.config as config
 
 class Notifier:
     _instance = None

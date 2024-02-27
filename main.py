@@ -1,24 +1,26 @@
 import threading
+import os
 from flask import Flask, render_template
 from flask_bootstrap import Bootstrap
+from datetime import datetime
 
-import config
-from checker import Checker
-from yaml_reader import YamlReader
-from helpers import hr_time
-from datetime import datetime
-from datetime import datetime
+import app.config as config
+from app.checker import Checker
+from app.yaml_reader import YamlReader
+from app.helpers import hr_time
+from app.logger import logger
 
 # Load the services from the YAML file
 services_to_monitor = YamlReader(config.services_yaml).services
 
-app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__, static_url_path='/app/static')
 Bootstrap(app)
 
 checker = Checker(services_to_monitor)
 
 service_start_time = datetime.utcnow()
-print(service_start_time)
+logger.info(f'Service started at {service_start_time}')
+# print(service_start_time)
 
 def get_service_summaries():
     summaries = []
@@ -43,8 +45,19 @@ def update_cards():
                            len=len)
 
 
+def file_exists(path: str) -> bool:
+    """Checks if the given path is valid
 
-if __name__ == '__main__':
+    :param path: absolute or relative path
+    :return: True if the path exists, False otherwise
+    """
+    if os.path.exists(path):
+        return True
+    else:
+        return False
+
+
+if __name__ == '__main__':    
     checker_thread = threading.Thread(target=checker.check_services)
     checker_thread.start()
-    app.run(host='0.0.0.0', port=config.port, debug=False)
+    app.run(host='0.0.0.0', port=config.port, debug=True)

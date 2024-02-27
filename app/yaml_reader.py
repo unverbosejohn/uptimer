@@ -1,14 +1,18 @@
 import yaml
+import os
 
-import config
-from service import Service
-from database import Database
+import app.config as config
+from app.service import Service
+from app.database import Database
+from app.logger import logger
 
 class YamlReader:
     def __init__(self, file_path):
         self.file_path = file_path
         self.services = self.read_services()
-
+        logger.info(f"[YAML_READER] Loaded {len(self.services)} services from {self.file_path}")
+        logger.info(f'[YAML_READER] Services: {self.services}')
+        
     def read_services(self):
         services = []
         try:
@@ -37,15 +41,15 @@ class YamlReader:
 
                     services.append(service)
 
-        except FileNotFoundError:
-            print(f"File not found: {self.file_path}")
+        except FileNotFoundError as err:
+            print(f"File not found? ({err}): {self.file_path}. Current working directory: {os.getcwd()}.")
         except Exception as e:
             print(f"Error reading YAML file: {str(e)}")
 
         return services
 
 if __name__ == "__main__":
-    yaml_reader = YamlReader("services.yaml")
+    yaml_reader = YamlReader(config.ROOT_DIR + "services.yaml")
     services = yaml_reader.read_services()
 
     for service in services:

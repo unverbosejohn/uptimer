@@ -1,0 +1,30 @@
+# Ignore common Python files
+*.pyc
+*.pyo
+*.pyd
+.Python
+__pycache__/
+
+
+# Ignore virtual environment files
+venv/
+env/
+.env/
+
+# Ignore development and debugging files
+*.log
+*.vscode/
+.idea/
+
+# Ignore project-specific files
+*.db
+
+# Git
+.git
+.gitignore
+
+# Configuration
+config.yaml
+config.example.yaml
+services.yaml
+services.example.yaml

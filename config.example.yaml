@@ -1,0 +1,24 @@
+services_yaml: 'services.yaml'
+db_file: 'services.db'
+schema_file: 'app/services.sql'
+
+logging:
+  log_level: 'info'
+  abs_log_path: '../uptimer.log'
+
+defaults:
+  interval: 120
+  alert_period: 300
+  timeout: 10
+
+email:
+  enabled: False
+  smtp_server: ''
+  smtp_port: 587
+  smtp_username: ''
+  smtp_password: ''
+  sender_email: ''
+  recipients_list:
+    - ''
+
+port: 5001
