@@ -18,8 +18,8 @@ offline after a set period.
    - Define your services in `services.yaml`.
 
 2. **Setting up Configuration File**:
-   - Rename `config.example.py` to `config.py`.
-   - Edit `config.py` to suit your environment and preferences, such as default values, smpt server details, Slack/Teams tokens, etc.
+   - Rename `config.example.yaml` to `config.yaml`.
+   - Edit `config.yaml` to suit your environment and preferences, such as default values, smpt server details, Slack/Teams tokens, etc.
 
 ### Running the Dashboard
 - After configuring the services and settings, run main.py script to start the dashboard.
@@ -50,6 +50,15 @@ offline after a set period.
    gunicorn -w 4 -b 0.0.0.0:5000 main:app
    ```
    - Access your dashboard at http://127.0.0.1:5000
+
+**Building and running as a docker container**
+- From the project root: docker build -t uptimer:latest .
+- Make sure to correctly map services.yaml and config.yaml
+- /usr/bin/docker run --rm --name uptimer_service \
+   -p 5001:5001 \
+   -v /root/uptimer/config.yaml:/usr/src/app/config.yaml \
+   -v /root/uptimer/services.yaml:/usr/src/app/services.yaml \
+   --log-driver=syslog uptimer:latest
 
 ## Technical Details
 - The dashboard frontend is built using HTML, CSS, and JavaScript.
